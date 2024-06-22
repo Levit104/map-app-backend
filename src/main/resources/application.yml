@@ -1,0 +1,41 @@
+server:
+  port: 8899
+  servlet:
+    context-path: /api
+
+# Настройки подключения к бд
+spring:
+  application:
+    name: grabli_application
+  datasource:
+    url: jdbc:postgresql://localhost:5432/grabli_db?ApplicationName=${spring.application.name}
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      # Ограничение пула подключений к бд
+      maximumPoolSize: 10
+  jpa:
+    show-sql: true
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL9Dialect
+        default_schema: grabli_schema
+        # Логи sql запросов
+#        format_sql: true
+#        generate_statistics: true
+
+logging:
+  file:
+    name: logs/application.log
+  level:
+    org:
+      hibernate:
+        # Логгирование параметров запросов в бд
+#        type: TRACE
+      springframework:
+        web: DEBUG
