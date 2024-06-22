@@ -9,8 +9,8 @@ spring:
     name: grabli_application
   datasource:
     url: jdbc:postgresql://localhost:5432/grabli_db?ApplicationName=${spring.application.name}
-    username: postgres
-    password: postgres
+    username: grabli
+    password: 9XJyr6VnFons0iK0
     driver-class-name: org.postgresql.Driver
     hikari:
       # Ограничение пула подключений к бд
