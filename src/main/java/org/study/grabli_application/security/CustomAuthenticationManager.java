@@ -17,37 +17,37 @@ import org.study.grabli_application.service.UserService;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CustomAuthenticationManager implements AuthenticationProvider {
 
-  private final UserService userService;
-  private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserService userService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-  @Override
-  public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-    String username = authentication.getPrincipal() + "";
-    String password = authentication.getCredentials() + "";
+        String username = authentication.getPrincipal() + "";
+        String password = authentication.getCredentials() + "";
 
-    UserDetails user;
+        UserDetails user;
 
-    try {
+        try {
 
-      user = userService.loadUserByUsername(username);
-    } catch (UsernameNotFoundException ex) {
+            user = userService.loadUserByUsername(username);
+        } catch (UsernameNotFoundException ex) {
 
-      User newUser = new User();
-      newUser.setUsername(username);
-      newUser.setPassd(password);
-      user = userService.saveUser(newUser);
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPassd(password);
+            user = userService.saveUser(newUser);
+        }
+
+        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("Пароль не верный");
+        }
+
+        return new UsernamePasswordAuthenticationToken(username, null, Collections.singletonList(DefaultRole.DEFAULT));
     }
 
-    if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-      throw new BadCredentialsException("Пароль не верный");
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
-
-    return new UsernamePasswordAuthenticationToken(username, null, Collections.singletonList(DefaultRole.DEFAULT));
-  }
-
-  @Override
-  public boolean supports(Class<?> authentication) {
-    return authentication.equals(UsernamePasswordAuthenticationToken.class);
-  }
 }

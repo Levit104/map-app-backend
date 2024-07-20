@@ -14,19 +14,19 @@ import org.hibernate.annotations.Formula;
 @EqualsAndHashCode(of={"id"})
 public class StreetObject {
 
-  @Id
-  @Column(name = "id")
-  private Long id;
+    @Id
+    @Column(name = "id")
+    private Long id;
 
-  @Column(name = "id_creater")
-  private Long idCreator;
+    @Column(name = "id_creater")
+    private Long idCreator;
 
-  @Column(name = "id_object")
-  private Long idStreetObjectType;
+    @Column(name = "id_object")
+    private Long idStreetObjectType;
 
-  @Column(name = "commentary")
-  private String comment;
+    @Column(name = "commentary")
+    private String comment;
 
-  @Formula("ST_AsGeoJSON(coordinate)")
-  private String coordinate;
+    @Formula("ST_AsGeoJSON(coordinate)")
+    private String coordinate;
 }

@@ -14,31 +14,31 @@ import org.study.grabli_application.repository.UserRepository;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserService implements UserDetailsService {
 
-  private final UserRepository userRepository;
-  private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-  @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-    return userRepository.findByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
-  }
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
+    }
 
-  public User findUserById(Long userId) {
+    public User findUserById(Long userId) {
 
-    return userRepository.findById(userId).orElse(null);
-  }
+        return userRepository.findById(userId).orElse(null);
+    }
 
-  public User saveUser(User user) {
+    public User saveUser(User user) {
 
-    user.setPassd(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setPassd(bCryptPasswordEncoder.encode(user.getPassword()));
 
-    return userRepository.save(user);
-  }
+        return userRepository.save(user);
+    }
 
-  public User findByUsername(String username) throws UsernameNotFoundException {
+    public User findByUsername(String username) throws UsernameNotFoundException {
 
-    return userRepository.findByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
-  }
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
+    }
 }

@@ -21,53 +21,53 @@ import org.study.grabli_application.security.DefaultRole;
 @Table(name = "users", schema = "grabli_schema")
 public class User implements UserDetails {
 
-  @Id
-  @Column(name = "id")
-  @SequenceGenerator(name = "user_id_generator", schema = "grabli_schema",
-      sequenceName = "users_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_generator")
-  private Long id;
+    @Id
+    @Column(name = "id")
+    @SequenceGenerator(name = "user_id_generator", schema = "grabli_schema",
+            sequenceName = "users_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_generator")
+    private Long id;
 
-  @Column(name = "login")
-  private String username;
+    @Column(name = "login")
+    private String username;
 
-  @Column(name = "passd")
-  private String passd;
+    @Column(name = "passd")
+    private String passd;
 
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
 
-    return Collections.singletonList(DefaultRole.DEFAULT);
-  }
+        return Collections.singletonList(DefaultRole.DEFAULT);
+    }
 
-  @Override
-  public String getPassword() {
-    return passd;
-  }
+    @Override
+    public String getPassword() {
+        return passd;
+    }
 
-  @Override
-  public String getUsername() {
-    return username;
-  }
+    @Override
+    public String getUsername() {
+        return username;
+    }
 
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

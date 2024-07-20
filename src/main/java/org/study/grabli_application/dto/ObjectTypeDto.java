@@ -7,9 +7,9 @@ import lombok.Data;
 @Builder
 public class ObjectTypeDto {
 
-  private Long id;
+    private Long id;
 
-  private String ObjectName;
+    private String ObjectName;
 
-  private String tag;
+    private String tag;
 }

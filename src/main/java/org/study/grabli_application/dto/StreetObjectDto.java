@@ -10,13 +10,13 @@ import lombok.Data;
 @JsonInclude(Include.NON_NULL)
 public class StreetObjectDto {
 
-  private Long id;
+    private Long id;
 
-  private Long idCreator;
+    private Long idCreator;
 
-  private Long idStreetObjectType;
+    private Long idStreetObjectType;
 
-  private Coordinate coordinate;
+    private Coordinate coordinate;
 
-  private String comment;
+    private String comment;
 }

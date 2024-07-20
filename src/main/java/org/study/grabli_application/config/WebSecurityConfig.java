@@ -21,39 +21,39 @@ import org.study.grabli_application.service.UserService;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  @Autowired
-  private UserService userService;
+    @Autowired
+    private UserService userService;
 
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) {
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
 
-    AuthenticationProvider provider = new CustomAuthenticationManager(userService, bCryptPasswordEncoder());
-    auth.authenticationProvider(provider);
-  }
+        AuthenticationProvider provider = new CustomAuthenticationManager(userService, bCryptPasswordEncoder());
+        auth.authenticationProvider(provider);
+    }
 
-  @Bean
-  public BCryptPasswordEncoder bCryptPasswordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Override
-  protected void configure(HttpSecurity httpSecurity) throws Exception {
-    httpSecurity
-        .csrf()
-        .disable()
-        .authorizeRequests()
-        .antMatchers("/grabli").permitAll()
-        .antMatchers("/**").permitAll()
-        .anyRequest().authenticated()
-        .and()
-        .formLogin()
-        .loginPage("/login")
-        .successHandler(new AuthenticationSuccessHandler())
-        .failureHandler(new AuthenticationFailureHandler())
-        .permitAll()
-        .and()
-        .logout()
-        .permitAll()
-        .logoutSuccessHandler(new LogoutHandler());
-  }
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .csrf()
+                .disable()
+                .authorizeRequests()
+                .antMatchers("/grabli").permitAll()
+                .antMatchers("/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .successHandler(new AuthenticationSuccessHandler())
+                .failureHandler(new AuthenticationFailureHandler())
+                .permitAll()
+                .and()
+                .logout()
+                .permitAll()
+                .logoutSuccessHandler(new LogoutHandler());
+    }
 }

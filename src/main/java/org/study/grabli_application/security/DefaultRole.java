@@ -4,10 +4,10 @@ import org.springframework.security.core.GrantedAuthority;
 
 public enum DefaultRole implements GrantedAuthority {
 
-  DEFAULT;
+    DEFAULT;
 
-  @Override
-  public String getAuthority() {
-    return "USER";
-  }
+    @Override
+    public String getAuthority() {
+        return "USER";
+    }
 }

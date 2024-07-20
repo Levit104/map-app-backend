@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"org.study.grabli_application"})
 public class GrabliApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(GrabliApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(GrabliApplication.class, args);
+    }
 }

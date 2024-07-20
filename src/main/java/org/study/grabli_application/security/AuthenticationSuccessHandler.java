@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-  @Override
-  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-      Authentication authentication) throws IOException {
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException {
 
-    response.setStatus(HttpServletResponse.SC_OK);
-  }
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
 }

@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class UpdateStreetObject {
 
-  private String comment;
+    private String comment;
 }

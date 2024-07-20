@@ -6,5 +6,5 @@ import org.study.grabli_application.entity.StreetObject;
 
 public interface StreetObjectRepository extends JpaRepository<StreetObject, Long> {
 
-  List<StreetObject> findByIdCreator(Long id);
+    List<StreetObject> findByIdCreator(Long id);
 }

@@ -13,13 +13,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(of={"id"})
 public class StreetObjectType {
 
-  @Id
-  @Column(name = "id")
-  private Long id;
+    @Id
+    @Column(name = "id")
+    private Long id;
 
-  @Column(name = "object_name")
-  private String ObjectName;
+    @Column(name = "object_name")
+    private String ObjectName;
 
-  @Column(name = "tag")
-  private String tag;
+    @Column(name = "tag")
+    private String tag;
 }
