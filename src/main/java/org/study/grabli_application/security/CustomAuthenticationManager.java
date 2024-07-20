@@ -10,11 +10,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.util.Collections;
-
 import org.study.grabli_application.entity.User;
 import org.study.grabli_application.service.UserService;
+
+import java.util.Collections;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CustomAuthenticationManager implements AuthenticationProvider {

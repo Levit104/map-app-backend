@@ -1,27 +1,19 @@
 package org.study.grabli_application.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.study.grabli_application.security.DefaultRole;
 
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.study.grabli_application.security.DefaultRole;
-
 @Entity
+@Table(name = "users", schema = "grabli_schema")
 @Data
 @EqualsAndHashCode(of = "id")
-@Table(name = "users", schema = "grabli_schema")
 public class User implements UserDetails {
 
     @Id
