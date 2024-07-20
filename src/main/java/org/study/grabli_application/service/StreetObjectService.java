@@ -1,21 +1,15 @@
-package org.study.grabli_application.repository;
+package org.study.grabli_application.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.study.grabli_application.dto.Coordinate;
 import org.study.grabli_application.dto.NewStreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDto;
@@ -23,14 +17,19 @@ import org.study.grabli_application.dto.UpdateStreetObject;
 import org.study.grabli_application.entity.StreetObject;
 import org.study.grabli_application.exceptions.EntityCreationException;
 import org.study.grabli_application.exceptions.EntityNotFoundException;
+import org.study.grabli_application.repository.StreetObjectRepository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
 @Slf4j
-@Repository
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class StreetObjectDao {
+public class StreetObjectService {
+    private final StreetObjectRepository streetObjectRepository;
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
-    private final StreetObjectRepository streetObjectRepository;
 
     public List<StreetObjectDto> getAll() {
         return streetObjectRepository.findAll().stream()
