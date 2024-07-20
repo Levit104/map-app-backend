@@ -30,13 +30,6 @@ public class StreetObjectDao {
   private final ObjectMapper objectMapper;
   private final StreetObjectRepository streetObjectRepository;
 
-  public List<StreetObjectDto> getStreetObjects(Long userId) {
-
-    return streetObjectRepository.findByIdCreator(userId).stream()
-        .map(this::mapStreetObjectToDTO)
-        .collect(Collectors.toList());
-  }
-
     public List<StreetObjectDto> getAllStreetObjects() {
       return streetObjectRepository.findAll().stream()
               .map(this::mapStreetObjectToDTO)
@@ -61,7 +54,7 @@ public class StreetObjectDao {
             .build();
     }
 
-  public StreetObjectDto saveStreetObject(NewStreetObjectDto streetObjectDto, Long userId) {
+  public StreetObjectDto saveStreetObject(NewStreetObjectDto streetObjectDto) {
 
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -70,7 +63,7 @@ public class StreetObjectDao {
             + "(id_creater, id_object, coordinate, commentary) "
             + "values (:userId, :type, ST_GeomFromText(:point, 4326), :commentary)",
         new MapSqlParameterSource()
-            .addValue("userId", userId)
+            .addValue("userId", 4) // FIXME ставится id-шник существующего пользователя, т.к. пользователей не будет - убрать
             .addValue("type", streetObjectDto.getIdStreetObjectType())
             .addValue("point",
                 "POINT("
@@ -90,31 +83,23 @@ public class StreetObjectDao {
     }
   }
 
-  public ResponseEntity commentStreetObject(Long id, UpdateStreetObject dto, Long userId) {
+  public ResponseEntity commentStreetObject(Long id, UpdateStreetObject dto) {
 
     return streetObjectRepository.findById(id)
         .map(s -> {
-          if (s.getIdCreator().equals(userId)) {
             s.setComment(dto.getComment());
             streetObjectRepository.saveAndFlush(s);
             return ResponseEntity.ok().build();
-          } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-          }
         })
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
-  public ResponseEntity deleteStreetObject(Long id, Long userId) {
+  public ResponseEntity deleteStreetObject(Long id) {
 
     return streetObjectRepository.findById(id)
         .map(s -> {
-          if (s.getIdCreator().equals(userId)) {
             streetObjectRepository.delete(s);
             return ResponseEntity.ok().build();
-          } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-          }
         })
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 
