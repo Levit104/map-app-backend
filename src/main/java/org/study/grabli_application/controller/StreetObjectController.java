@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 import org.study.grabli_application.dto.NewStreetObjectDto;
@@ -28,7 +29,6 @@ import org.study.grabli_application.repository.StreetObjectTypeRepository;
 @RequestMapping("/grabli")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class StreetObjectController {
-
     private final StreetObjectTypeRepository objectTypeRepository;
     private final StreetObjectDao streetObjectDao;
 
@@ -43,9 +43,7 @@ public class StreetObjectController {
     }
 
     @PostMapping("/commentStreetObject/{id}")
-    public ResponseEntity commentStreetObject(
-            @PathVariable Long id, @RequestBody UpdateStreetObject dto) {
-
+    public ResponseEntity commentStreetObject(@PathVariable Long id, @RequestBody UpdateStreetObject dto) {
         return streetObjectDao.commentStreetObject(id, dto);
     }
 
@@ -56,7 +54,6 @@ public class StreetObjectController {
 
     @GetMapping("/objectTypes")
     public ResponseEntity<List<ObjectTypeDto>> getStreetObjectTypes() {
-
         return ResponseEntity.ok(objectTypeRepository.findAll().stream()
                 .map(t -> ObjectTypeDto.builder()
                         .id(t.getId())

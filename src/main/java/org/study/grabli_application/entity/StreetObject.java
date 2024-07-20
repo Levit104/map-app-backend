@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Formula;
@@ -11,7 +12,7 @@ import org.hibernate.annotations.Formula;
 @Entity
 @Data
 @Table(name = "project_object", schema = "grabli_schema")
-@EqualsAndHashCode(of={"id"})
+@EqualsAndHashCode(of = {"id"})
 public class StreetObject {
 
     @Id
