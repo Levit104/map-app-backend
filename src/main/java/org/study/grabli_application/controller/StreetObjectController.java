@@ -6,14 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,22 +27,24 @@ public class StreetObjectController {
 
     @GetMapping("/streetObjects")
     public ResponseEntity<List<StreetObjectDto>> getAllStreetObjects() {
-        return ResponseEntity.ok(streetObjectDao.getAllStreetObjects());
+        return ResponseEntity.ok(streetObjectDao.getAll());
     }
 
     @PostMapping("/streetObjects")
     public ResponseEntity<StreetObjectDto> saveStreetObject(@RequestBody NewStreetObjectDto streetObjectDto) {
-        return ResponseEntity.ok(streetObjectDao.saveStreetObject(streetObjectDto));
+        return ResponseEntity.ok(streetObjectDao.save(streetObjectDto));
     }
 
     @PostMapping("/commentStreetObject/{id}")
-    public ResponseEntity commentStreetObject(@PathVariable Long id, @RequestBody UpdateStreetObject dto) {
-        return streetObjectDao.commentStreetObject(id, dto);
+    public ResponseEntity<?> commentStreetObject(@PathVariable Long id, @RequestBody UpdateStreetObject dto) {
+        streetObjectDao.update(id, dto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/streetObjects")
-    public ResponseEntity deleteStreetObject(@RequestParam Long id) {
-        return streetObjectDao.deleteStreetObject(id);
+    public ResponseEntity<?> deleteStreetObject(@RequestParam Long id) {
+        streetObjectDao.delete(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/objectTypes")

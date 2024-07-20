@@ -3,8 +3,7 @@ package org.study.grabli_application.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,23 +21,24 @@ import org.study.grabli_application.dto.NewStreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDto;
 import org.study.grabli_application.dto.UpdateStreetObject;
 import org.study.grabli_application.entity.StreetObject;
+import org.study.grabli_application.exceptions.EntityCreationException;
+import org.study.grabli_application.exceptions.EntityNotFoundException;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class StreetObjectDao {
-
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
     private final StreetObjectRepository streetObjectRepository;
 
-    public List<StreetObjectDto> getAllStreetObjects() {
+    public List<StreetObjectDto> getAll() {
         return streetObjectRepository.findAll().stream()
-                .map(this::mapStreetObjectToDTO)
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    private StreetObjectDto mapStreetObjectToDTO(StreetObject s) {
+    private StreetObjectDto mapToDTO(StreetObject s) {
         Coordinate coordinate = null;
 
         try {
@@ -56,51 +56,48 @@ public class StreetObjectDao {
                 .build();
     }
 
-    public StreetObjectDto saveStreetObject(NewStreetObjectDto streetObjectDto) {
+    public StreetObjectDto save(NewStreetObjectDto dto) {
+        String sql = "insert into grabli_schema.project_object "
+                + "(id_creater, id_object, coordinate, commentary) "
+                + "values (:userId, :type, ST_GeomFromText(:point, 4326), :commentary)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", 4) // FIXME ставится id-шник существующего пользователя, т.к. пользователей не будет - убрать
+                .addValue("type", dto.getIdStreetObjectType())
+                .addValue("point", String.format("POINT(%s %s)",
+                        dto.getCoordinate().getCoordinates()[0], dto.getCoordinate().getCoordinates()[1]))
+                .addValue("commentary", dto.getComment());
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        int numberOfInsertedRows = jdbcTemplate.update(
-                "insert into grabli_schema.project_object "
-                        + "(id_creater, id_object, coordinate, commentary) "
-                        + "values (:userId, :type, ST_GeomFromText(:point, 4326), :commentary)",
-                new MapSqlParameterSource()
-                        .addValue("userId", 4) // FIXME ставится id-шник существующего пользователя, т.к. пользователей не будет - убрать
-                        .addValue("type", streetObjectDto.getIdStreetObjectType())
-                        .addValue("point",
-                                "POINT("
-                                        + streetObjectDto.getCoordinate().getCoordinates()[0]
-                                        + " " + streetObjectDto.getCoordinate().getCoordinates()[1] + ")")
-                        .addValue("commentary", streetObjectDto.getComment()),
-                keyHolder);
+        int insertedRows = jdbcTemplate.update(sql, params, keyHolder);
 
-        if (numberOfInsertedRows == 1) {
-            return Optional.ofNullable(keyHolder.getKeys()).map(m ->
-                            StreetObjectDto.builder()
-                                    .id((Long) m.get("id"))
-                                    .build())
-                    .orElse(null);
-        } else {
-            return null;
+        if (insertedRows != 1) {
+            throw new EntityCreationException("Ошибка при создании объекта");
         }
+
+        Long id = (Long) Optional.ofNullable(keyHolder.getKeys())
+                .orElseThrow(() -> new EntityCreationException("Ошибка при создании объекта"))
+                .get("id");
+
+        return StreetObjectDto.builder().id(id).build();
     }
 
-    public ResponseEntity commentStreetObject(Long id, UpdateStreetObject dto) {
-        return streetObjectRepository.findById(id)
-                .map(s -> {
-                    s.setComment(dto.getComment());
-                    streetObjectRepository.saveAndFlush(s);
-                    return ResponseEntity.ok().build();
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public void update(Long id, UpdateStreetObject dto) {
+        StreetObject streetObject = streetObjectRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Объект не найден")
+        );
+
+        streetObject.setComment(dto.getComment());
+        streetObjectRepository.save(streetObject);
     }
 
-    public ResponseEntity deleteStreetObject(Long id) {
-        return streetObjectRepository.findById(id)
-                .map(s -> {
-                    streetObjectRepository.delete(s);
-                    return ResponseEntity.ok().build();
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-
+    public void delete(Long id) {
+        // try catch нужен для Spring Boot 2, в Boot 3 исключение не бросается
+        try {
+            streetObjectRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Объект не найден");
+        }
     }
 }
