@@ -1,7 +1,5 @@
 package org.study.grabli_application.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,18 +8,17 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
-import org.study.grabli_application.dto.Coordinate;
-import org.study.grabli_application.dto.NewStreetObjectDto;
+import org.study.grabli_application.dto.StreetObjectDtoCreate;
 import org.study.grabli_application.dto.StreetObjectDto;
-import org.study.grabli_application.dto.UpdateStreetObject;
+import org.study.grabli_application.dto.StreetObjectDtoUpdate;
 import org.study.grabli_application.entity.StreetObject;
 import org.study.grabli_application.exceptions.EntityCreationException;
 import org.study.grabli_application.exceptions.EntityNotFoundException;
 import org.study.grabli_application.repository.StreetObjectRepository;
+import org.study.grabli_application.util.MappingHelper;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,43 +26,28 @@ import java.util.stream.Collectors;
 public class StreetObjectService {
     private final StreetObjectRepository streetObjectRepository;
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final ObjectMapper objectMapper;
+    private final MappingHelper mappingHelper;
 
     public List<StreetObjectDto> getAll() {
-        return streetObjectRepository.findAll().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        return mappingHelper.mapList(streetObjectRepository.findAll(), StreetObjectDto.class);
     }
 
-    private StreetObjectDto mapToDTO(StreetObject s) {
-        Coordinate coordinate = null;
+    public StreetObjectDto save(StreetObjectDtoCreate dto) {
+        String sql = "insert into grabli_schema.street_object "
+                + "(type_id, coordinate, title, description, image, creator_name, creator_contact) "
+                + "values (:typeId, ST_GeomFromText(:point, 4326), :title, :description, :image, :creatorName, :creatorContact)";
 
-        try {
-            coordinate = objectMapper.readValue(s.getCoordinate(), Coordinate.class);
-        } catch (JsonProcessingException ex) {
-            log.error("error while extract coordinates", ex);
-        }
-
-        return StreetObjectDto.builder()
-                .id(s.getId())
-                .idStreetObjectType(s.getIdStreetObjectType())
-                .idCreator(s.getIdCreator())
-                .coordinate(coordinate)
-                .comment(s.getComment())
-                .build();
-    }
-
-    public StreetObjectDto save(NewStreetObjectDto dto) {
-        String sql = "insert into grabli_schema.project_object "
-                + "(id_creater, id_object, coordinate, commentary) "
-                + "values (:userId, :type, ST_GeomFromText(:point, 4326), :commentary)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", 4) // FIXME ставится id-шник существующего пользователя, т.к. пользователей не будет - убрать
-                .addValue("type", dto.getIdStreetObjectType())
+                .addValue("typeId", dto.getTypeId())
                 .addValue("point", String.format("POINT(%s %s)",
                         dto.getCoordinate().getCoordinates()[0], dto.getCoordinate().getCoordinates()[1]))
-                .addValue("commentary", dto.getComment());
+                .addValue("title", dto.getTitle())
+                // TODO доработать фронт
+                .addValue("description", "TODO")
+                .addValue("image", "TODO")
+                .addValue("creatorName", "TODO")
+                .addValue("creatorContact", "TODO");
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -79,15 +61,19 @@ public class StreetObjectService {
                 .orElseThrow(() -> new EntityCreationException("Ошибка при создании объекта"))
                 .get("id");
 
-        return StreetObjectDto.builder().id(id).build();
+        return new StreetObjectDto(id);
     }
 
-    public void update(Long id, UpdateStreetObject dto) {
+    public void update(Long id, StreetObjectDtoUpdate dto) {
         StreetObject streetObject = streetObjectRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Объект не найден")
         );
-
-        streetObject.setComment(dto.getComment());
+        // TODO доработать фронт
+        streetObject.setTitle(dto.getTitle());
+        streetObject.setDescription("TODO");
+        streetObject.setImage("TODO");
+        streetObject.setCreatorName("TODO");
+        streetObject.setCreatorContact("TODO");
         streetObjectRepository.save(streetObject);
     }
 

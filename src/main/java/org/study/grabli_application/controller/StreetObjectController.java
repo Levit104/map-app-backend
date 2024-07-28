@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.study.grabli_application.dto.NewStreetObjectDto;
-import org.study.grabli_application.dto.ObjectTypeDto;
-import org.study.grabli_application.dto.UpdateStreetObject;
+import org.study.grabli_application.dto.StreetObjectDtoCreate;
+import org.study.grabli_application.dto.StreetObjectTypeDto;
+import org.study.grabli_application.dto.StreetObjectDtoUpdate;
 import org.study.grabli_application.service.StreetObjectService;
 import org.study.grabli_application.service.StreetObjectTypeService;
 
@@ -26,12 +26,12 @@ public class StreetObjectController {
     }
 
     @PostMapping("/streetObjects")
-    public ResponseEntity<?> saveStreetObject(@RequestBody NewStreetObjectDto streetObjectDto) {
+    public ResponseEntity<?> saveStreetObject(@RequestBody StreetObjectDtoCreate streetObjectDto) {
         return ResponseEntity.ok(streetObjectService.save(streetObjectDto));
     }
 
     @PostMapping("/commentStreetObject/{id}")
-    public ResponseEntity<?> commentStreetObject(@PathVariable Long id, @RequestBody UpdateStreetObject dto) {
+    public ResponseEntity<?> commentStreetObject(@PathVariable Long id, @RequestBody StreetObjectDtoUpdate dto) {
         streetObjectService.update(id, dto);
         return ResponseEntity.ok().build();
     }
@@ -43,7 +43,7 @@ public class StreetObjectController {
     }
 
     @GetMapping("/objectTypes")
-    public ResponseEntity<List<ObjectTypeDto>> getStreetObjectTypes() {
+    public ResponseEntity<List<StreetObjectTypeDto>> getStreetObjectTypes() {
         return ResponseEntity.ok(streetObjectTypeService.getAll());
     }
 }

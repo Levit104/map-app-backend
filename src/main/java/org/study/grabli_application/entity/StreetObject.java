@@ -4,30 +4,37 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Formula;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "project_object", schema = "grabli_schema")
+@Table(name = "street_object", schema = "grabli_schema")
 @Data
 @EqualsAndHashCode(of = {"id"})
 public class StreetObject {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "id_creater")
-    private Long idCreator;
-
-    @Column(name = "id_object")
-    private Long idStreetObjectType;
-
-    @Column(name = "commentary")
-    private String comment;
+    @ManyToOne
+    @JoinColumn(name = "type_id", referencedColumnName = "id", nullable = false)
+    private StreetObjectType type;
 
     @Formula("ST_AsGeoJSON(coordinate)")
     private String coordinate;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "image", nullable = false)
+    private String image;
+
+    @Column(name = "creator_name", nullable = false)
+    private String creatorName;
+
+    @Column(name = "creator_contact", nullable = false)
+    private String creatorContact;
 }

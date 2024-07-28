@@ -15,20 +15,16 @@ import java.util.Collections;
 @Data
 @EqualsAndHashCode(of = "id")
 public class User implements UserDetails {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @SequenceGenerator(name = "user_id_generator", schema = "grabli_schema",
-            sequenceName = "users_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_generator")
     private Long id;
 
     @Column(name = "login")
     private String username;
 
-    @Column(name = "passd")
-    private String passd;
-
+    @Column(name = "password")
+    private String password;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -38,7 +34,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passd;
+        return password;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class CustomAuthenticationManager implements AuthenticationProvider {
 
             User newUser = new User();
             newUser.setUsername(username);
-            newUser.setPassd(password);
+            newUser.setPassword(password);
             user = userService.saveUser(newUser);
         }
 
