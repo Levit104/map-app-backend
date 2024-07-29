@@ -37,4 +37,7 @@ public class StreetObject {
 
     @Column(name = "creator_contact", nullable = false)
     private String creatorContact;
+
+    @Column(name = "approved")
+    private Boolean approved;
 }

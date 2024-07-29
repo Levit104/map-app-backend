@@ -46,4 +46,11 @@ public class StreetObjectController {
     public ResponseEntity<List<StreetObjectTypeDto>> getStreetObjectTypes() {
         return ResponseEntity.ok(streetObjectTypeService.getAll());
     }
+
+    // TODO @PreAuthorize
+    @PatchMapping("/streetObjects/{id}")
+    public ResponseEntity<?> approveStreetObject(@PathVariable Long id, @RequestParam boolean approved) {
+        streetObjectService.changeApproved(id, approved);
+        return ResponseEntity.ok().build();
+    }
 }

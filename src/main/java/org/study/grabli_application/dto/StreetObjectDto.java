@@ -14,6 +14,7 @@ public class StreetObjectDto {
     private String image;
     private String creatorName;
     private String creatorContact;
+    private Boolean approved;
 
     public StreetObjectDto(Long id) {
         this.id = id;

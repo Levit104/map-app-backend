@@ -65,9 +65,7 @@ public class StreetObjectService {
     }
 
     public void update(Long id, StreetObjectDtoUpdate dto) {
-        StreetObject streetObject = streetObjectRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Объект не найден")
-        );
+        StreetObject streetObject = getById(id);
         // TODO доработать фронт
         streetObject.setTitle(dto.getTitle());
         streetObject.setDescription("TODO");
@@ -84,5 +82,17 @@ public class StreetObjectService {
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException("Объект не найден");
         }
+    }
+
+    public void changeApproved(Long id, boolean approved) {
+        StreetObject streetObject = getById(id);
+        streetObject.setApproved(approved);
+        streetObjectRepository.save(streetObject);
+    }
+
+    public StreetObject getById(Long id) {
+        return streetObjectRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Объект не найден")
+        );
     }
 }

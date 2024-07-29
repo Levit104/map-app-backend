@@ -21,5 +21,6 @@ CREATE TABLE grabli_schema.street_object
     description     varchar,
     image           varchar NOT NULL,
     creator_name    varchar NOT NULL,
-    creator_contact varchar NOT NULL
+    creator_contact varchar NOT NULL,
+    approved        boolean
 );
