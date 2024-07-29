@@ -8,7 +8,7 @@ public class StreetObjectDtoCreate {
     private Coordinate coordinate;
     private String title;
     private String description;
-    private String image;
+    private String image; // TODO MultipartFile???
     private String creatorName;
     private String creatorContact;
 }
