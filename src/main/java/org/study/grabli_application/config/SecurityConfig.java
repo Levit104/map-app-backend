@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 // .csrf(customizer -> customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
                 .authorizeRequests(customizer -> customizer
-                        .antMatchers("/street-objects").authenticated()
+                        // .antMatchers("/street-objects").authenticated()
                         .antMatchers("/**").permitAll()
                 )
                 .formLogin(customizer -> customizer
