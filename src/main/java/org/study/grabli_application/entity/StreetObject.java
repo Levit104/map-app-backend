@@ -20,7 +20,7 @@ public class StreetObject {
     @JoinColumn(name = "type_id", referencedColumnName = "id", nullable = false)
     private StreetObjectType type;
 
-    @Column(name = "location", nullable = false)
+    @Column(columnDefinition = "geometry(point, 4326)", name = "location", nullable = false)
     private Point location;
 
     @Column(name = "title", nullable = false)
