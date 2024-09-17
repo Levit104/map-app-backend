@@ -24,3 +24,9 @@ CREATE TABLE grabli_schema.street_object
     creator_contact varchar                                              NOT NULL,
     approved        boolean
 );
+
+INSERT INTO grabli_schema.street_object_type (name, tag)
+VALUES ('Библиотеки, музеи, научно-технические комплексы', 'library'),
+       ('Истории людей', 'story'),
+       ('Жизнь молодых учёных', 'science'),
+       ('Места получения знаний', 'knowledge');
