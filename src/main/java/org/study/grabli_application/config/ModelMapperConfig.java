@@ -1,46 +1,57 @@
 package org.study.grabli_application.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.study.grabli_application.dto.Coordinate;
+import org.study.grabli_application.dto.Coordinates;
 import org.study.grabli_application.dto.StreetObjectDto;
+import org.study.grabli_application.dto.StreetObjectDtoCreate;
 import org.study.grabli_application.entity.StreetObject;
 
 @Configuration
 @RequiredArgsConstructor
-@Slf4j
 public class ModelMapperConfig {
-    private final ObjectMapper objectMapper;
 
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
-        TypeMap<StreetObject, StreetObjectDto> typeMap = modelMapper
+        TypeMap<StreetObject, StreetObjectDto> toDTO = modelMapper
                 .createTypeMap(StreetObject.class, StreetObjectDto.class);
 
-        Converter<String, Coordinate> toCoordinate = (context) -> {
-            Coordinate coordinate = null;
+        Converter<Point, Coordinates> toLatLng = (context) -> new Coordinates(
+                context.getSource().getX(),
+                context.getSource().getY()
+        );
 
-            try {
-                coordinate = objectMapper.readValue(context.getSource(), Coordinate.class);
-            } catch (JsonProcessingException e) {
-                log.error("Ошибка при получении координат", e);
-            }
+        toDTO.addMappings(mapper -> mapper
+                .using(toLatLng)
+                .map(StreetObject::getLocation, StreetObjectDto::setCoordinates)
+        );
 
-            return coordinate;
-        };
+        TypeMap<StreetObjectDtoCreate, StreetObject> fromDTO = modelMapper
+                .createTypeMap(StreetObjectDtoCreate.class, StreetObject.class);
 
-        typeMap.addMappings(mapper -> mapper
-                .using(toCoordinate)
-                .map(StreetObject::getCoordinate, StreetObjectDto::setCoordinate)
+        Converter<Coordinates, Point> fromLatLng = (context -> geometryFactory
+                .createPoint(new Coordinate(context.getSource().getLat(), context.getSource().getLng()))
+        );
+
+        fromDTO.addMappings(mapper -> mapper
+                .using(fromLatLng)
+                .map(StreetObjectDtoCreate::getCoordinates, StreetObject::setLocation)
+        );
+
+        // без этого устанавливается streetObject.id такой же, как у streetObject.type.id
+        fromDTO.addMappings(mapper -> mapper
+                .skip(StreetObject::setId)
         );
 
         return modelMapper;

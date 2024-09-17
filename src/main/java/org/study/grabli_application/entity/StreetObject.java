@@ -2,7 +2,7 @@ package org.study.grabli_application.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.Formula;
+import org.locationtech.jts.geom.Point;
 
 import javax.persistence.*;
 
@@ -20,13 +20,13 @@ public class StreetObject {
     @JoinColumn(name = "type_id", referencedColumnName = "id", nullable = false)
     private StreetObjectType type;
 
-    @Formula("ST_AsGeoJSON(coordinate)")
-    private String coordinate;
+    @Column(name = "location", nullable = false)
+    private Point location;
 
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "image", nullable = false)

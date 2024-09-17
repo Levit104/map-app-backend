@@ -25,7 +25,7 @@ spring:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         properties:
             hibernate:
-                dialect: org.hibernate.dialect.PostgreSQL9Dialect
+                dialect: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
                 default_schema: grabli_schema
                 # Логи sql запросов
                 # format_sql: true
