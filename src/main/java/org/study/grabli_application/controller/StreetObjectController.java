@@ -28,7 +28,7 @@ public class StreetObjectController {
     }
 
     @PostMapping
-    public StreetObjectDto saveStreetObject(@RequestBody StreetObjectDtoCreate streetObjectDto) {
+    public StreetObjectDto saveStreetObject(/*@RequestBody*/ @ModelAttribute StreetObjectDtoCreate streetObjectDto) {
         log.info("Сохранение объекта {}", streetObjectDto);
         return streetObjectService.save(streetObjectDto);
     }

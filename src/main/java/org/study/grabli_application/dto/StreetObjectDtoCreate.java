@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class StreetObjectDtoCreate {
     private Integer typeId;
-    private Coordinates coordinates;
+    private String coordinates;
+    // private Coordinates coordinates;
     private String title;
     private String description;
     private String image; // TODO MultipartFile???

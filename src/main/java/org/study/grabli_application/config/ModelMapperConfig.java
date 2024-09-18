@@ -1,6 +1,8 @@
 package org.study.grabli_application.config;
 
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -14,14 +16,15 @@ import org.study.grabli_application.dto.Coordinates;
 import org.study.grabli_application.dto.StreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDtoCreate;
 import org.study.grabli_application.entity.StreetObject;
+import org.study.grabli_application.exceptions.EntityCreationException;
 
 @Configuration
-@RequiredArgsConstructor
+@Slf4j
 public class ModelMapperConfig {
-
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
         TypeMap<StreetObject, StreetObjectDto> toDTO = modelMapper
@@ -40,8 +43,19 @@ public class ModelMapperConfig {
         TypeMap<StreetObjectDtoCreate, StreetObject> fromDTO = modelMapper
                 .createTypeMap(StreetObjectDtoCreate.class, StreetObject.class);
 
-        Converter<Coordinates, Point> fromLatLng = (context -> geometryFactory
-                .createPoint(new Coordinate(context.getSource().getLat(), context.getSource().getLng()))
+        // Converter<Coordinates, Point> fromLatLng = (context -> geometryFactory
+        //         .createPoint(new Coordinate(context.getSource().getLat(), context.getSource().getLng()))
+
+        Converter<String, Point> fromLatLng = (context -> {
+            try {
+                Coordinates coordinates = objectMapper.readValue(context.getSource(), Coordinates.class);
+                return geometryFactory
+                        .createPoint(new Coordinate(coordinates.getLat(), coordinates.getLng()));
+            } catch (JsonProcessingException e) {
+                log.error(e.getMessage());
+                throw new EntityCreationException("Ошибка при создании объекта");
+            }
+        }
         );
 
         fromDTO.addMappings(mapper -> mapper
