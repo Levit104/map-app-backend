@@ -1,7 +1,5 @@
 server:
     port: 8899
-    error:
-        include-message: always
     servlet:
         context-path: /api
 spring:

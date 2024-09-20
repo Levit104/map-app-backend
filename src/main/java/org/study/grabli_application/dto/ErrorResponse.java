@@ -1,12 +1,12 @@
-package org.study.grabli_application.exceptions;
+package org.study.grabli_application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
 public class ErrorResponse {
     private LocalDateTime timestamp;
     private String request;

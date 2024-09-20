@@ -13,6 +13,6 @@ public class AuthenticationFailureHandlerImpl implements AuthenticationFailureHa
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

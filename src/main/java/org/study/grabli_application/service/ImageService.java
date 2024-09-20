@@ -5,8 +5,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.study.grabli_application.exceptions.EntityCreationException;
+import org.study.grabli_application.exceptions.ImageNotFoundException;
 import org.study.grabli_application.exceptions.ImageStorageException;
+import org.study.grabli_application.exceptions.ImageUploadException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -46,12 +47,12 @@ public class ImageService {
             Path path = uploadPath.resolve(fileName);
 
             if (!Files.exists(path)) {
-                throw new EntityCreationException("Файл не найден");
+                throw new ImageNotFoundException("Файл " + fileName + " не найден");
             }
 
             return new UrlResource(path.toUri());
         } catch (MalformedURLException e) {
-            throw new ImageStorageException("Ошибка при загрузке файла");
+            throw new ImageStorageException("Ошибка при загрузке файла " + fileName);
         }
     }
 
@@ -70,11 +71,11 @@ public class ImageService {
 
     private void validate(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new EntityCreationException("Пустой файл");
+            throw new ImageUploadException("Пустой файл");
         }
 
         if (file.getContentType() == null || !file.getContentType().startsWith("image/")) {
-            throw new EntityCreationException("Файл не является изображением");
+            throw new ImageUploadException("Файл не является изображением");
         }
     }
 

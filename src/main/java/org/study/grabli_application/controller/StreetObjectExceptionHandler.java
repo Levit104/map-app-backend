@@ -5,10 +5,12 @@ import org.apache.tomcat.util.http.fileupload.impl.SizeException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.study.grabli_application.exceptions.ErrorResponse;
+import org.study.grabli_application.dto.ErrorResponse;
+import org.study.grabli_application.exceptions.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -21,15 +23,52 @@ public class StreetObjectExceptionHandler {
 
     @ExceptionHandler(SizeException.class)
     public ResponseEntity<ErrorResponse> handleException(SizeException e, HttpServletRequest request) {
-        log.error(e.getMessage(), e);
-        return newResponse(
-                request,
-                HttpStatus.BAD_REQUEST,
-                "Размер файла не должен превышать " + maxFileSize.toMegabytes() + "МБ"
-        );
+        String message = "Размер файла не должен превышать " + maxFileSize.toMegabytes() + "МБ";
+        return newResponse(e, request, HttpStatus.BAD_REQUEST, message);
     }
 
-    private ResponseEntity<ErrorResponse> newResponse(HttpServletRequest request, HttpStatus status, String message) {
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleException(AccessDeniedException e, HttpServletRequest request) {
+        String message = "Доступ запрещён";
+        return newResponse(e, request, HttpStatus.FORBIDDEN, message);
+    }
+
+    @ExceptionHandler(EntityCreationException.class)
+    public ResponseEntity<ErrorResponse> handleException(EntityCreationException e, HttpServletRequest request) {
+        return newResponse(e, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleException(EntityNotFoundException e, HttpServletRequest request) {
+        return newResponse(e, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleException(ImageNotFoundException e, HttpServletRequest request) {
+        return newResponse(e, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ImageStorageException.class)
+    public ResponseEntity<ErrorResponse> handleException(ImageStorageException e, HttpServletRequest request) {
+        return newResponse(e, request, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ImageUploadException.class)
+    public ResponseEntity<ErrorResponse> handleException(ImageUploadException e, HttpServletRequest request) {
+        return newResponse(e, request, HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<ErrorResponse> newResponse(
+            Exception e, HttpServletRequest request, HttpStatus status
+    ) {
+        String message = e.getMessage();
+        return newResponse(e, request, status, message);
+    }
+
+    private ResponseEntity<ErrorResponse> newResponse(
+            Exception e, HttpServletRequest request, HttpStatus status, String message
+    ) {
+        log.error(message, e);
         return ResponseEntity
                 .status(status)
                 .body(new ErrorResponse(LocalDateTime.now(), requestString(request), statusString(status), message));
