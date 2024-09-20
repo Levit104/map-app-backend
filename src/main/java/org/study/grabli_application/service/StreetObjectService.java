@@ -25,9 +25,9 @@ public class StreetObjectService {
         return mappingHelper.mapList(streetObjectRepository.findAll(), StreetObjectDto.class);
     }
 
-    public StreetObjectDto save(StreetObjectDtoCreate dto) {
+    public StreetObjectDto save(StreetObjectDtoCreate dto, String imagePath) {
         StreetObject streetObject = mappingHelper.mapObject(dto, StreetObject.class);
-        streetObject.setImage("TODO"); // TODO доработать фронт
+        streetObject.setImage(imagePath);
         streetObjectRepository.save(streetObject);
         return mappingHelper.mapObject(streetObject, StreetObjectDto.class);
     }

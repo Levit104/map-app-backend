@@ -17,6 +17,10 @@ spring:
             hibernate:
                 dialect: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
                 default_schema: grabli_schema
+    servlet:
+        multipart:
+            max-file-size: 2MB
+            max-request-size: 2MB
 logging:
     file:
         name: logs/application.log
@@ -24,3 +28,5 @@ logging:
         org:
             springframework:
                 web: DEBUG
+application:
+    image-upload-path: images/

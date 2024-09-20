@@ -8,8 +8,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "street_object", schema = "grabli_schema")
-@Data
-@EqualsAndHashCode(of = {"id"})
+@Data // FIXME
+@EqualsAndHashCode(of = {"id"}) // FIXME
 public class StreetObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class StreetObject {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image", nullable = false, unique = true)
     private String image;
 
     @Column(name = "creator_name", nullable = false)

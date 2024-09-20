@@ -43,9 +43,6 @@ public class ModelMapperConfig {
         TypeMap<StreetObjectDtoCreate, StreetObject> fromDTO = modelMapper
                 .createTypeMap(StreetObjectDtoCreate.class, StreetObject.class);
 
-        // Converter<Coordinates, Point> fromLatLng = (context -> geometryFactory
-        //         .createPoint(new Coordinate(context.getSource().getLat(), context.getSource().getLng()))
-
         Converter<String, Point> fromLatLng = (context -> {
             try {
                 Coordinates coordinates = objectMapper.readValue(context.getSource(), Coordinates.class);
@@ -66,6 +63,11 @@ public class ModelMapperConfig {
         // без этого устанавливается streetObject.id такой же, как у streetObject.type.id
         fromDTO.addMappings(mapper -> mapper
                 .skip(StreetObject::setId)
+        );
+
+        // устанавливается вручную
+        fromDTO.addMappings(mapper -> mapper
+                .skip(StreetObject::setImage)
         );
 
         return modelMapper;

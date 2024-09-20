@@ -9,8 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "street_object_type", schema = "grabli_schema")
-@Data
-@EqualsAndHashCode(of = {"id"})
+@Data // FIXME
+@EqualsAndHashCode(of = {"id"}) // FIXME
 @ToString(exclude = {"streetObjects"})
 public class StreetObjectType {
     @Id

@@ -19,7 +19,7 @@ CREATE TABLE grabli_schema.street_object
     location        geometry(point, 4326)                                NOT NULL,
     title           varchar                                              NOT NULL,
     description     varchar                                              NOT NULL,
-    image           varchar                                              NOT NULL,
+    image           varchar UNIQUE                                       NOT NULL,
     creator_name    varchar                                              NOT NULL,
     creator_contact varchar                                              NOT NULL,
     approved        boolean
