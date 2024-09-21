@@ -17,6 +17,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <mapstruct.version>1.6.2</mapstruct.version>
     </properties>
 
     <dependencies>
@@ -49,9 +50,15 @@
             <version>${hibernate.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>3.0.0</version>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${mapstruct.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

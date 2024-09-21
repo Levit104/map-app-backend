@@ -3,19 +3,18 @@ package org.study.grabli_application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.study.grabli_application.dto.StreetObjectTypeDto;
+import org.study.grabli_application.mapper.StreetObjectTypeMapper;
 import org.study.grabli_application.repository.StreetObjectTypeRepository;
-import org.study.grabli_application.util.MappingHelper;
 
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
 public class StreetObjectTypeService {
     private final StreetObjectTypeRepository streetObjectTypeRepository;
-    private final MappingHelper mappingHelper;
+    private final StreetObjectTypeMapper streetObjectTypeMapper;
 
     public List<StreetObjectTypeDto> getAll() {
-        return mappingHelper.mapList(streetObjectTypeRepository.findAll(), StreetObjectTypeDto.class);
+        return streetObjectTypeMapper.toDtoList(streetObjectTypeRepository.findAll());
     }
 }

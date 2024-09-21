@@ -1,7 +1,6 @@
 package org.study.grabli_application.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.study.grabli_application.dto.StreetObjectDtoCreate;
@@ -9,27 +8,25 @@ import org.study.grabli_application.dto.StreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDtoUpdate;
 import org.study.grabli_application.entity.StreetObject;
 import org.study.grabli_application.exceptions.EntityNotFoundException;
+import org.study.grabli_application.mapper.StreetObjectMapper;
 import org.study.grabli_application.repository.StreetObjectRepository;
-import org.study.grabli_application.util.MappingHelper;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class StreetObjectService {
     private final StreetObjectRepository streetObjectRepository;
-    private final MappingHelper mappingHelper;
+    private final StreetObjectMapper streetObjectMapper;
 
     public List<StreetObjectDto> getAll() {
-        return mappingHelper.mapList(streetObjectRepository.findAll(), StreetObjectDto.class);
+        return streetObjectMapper.toDtoList(streetObjectRepository.findAll());
     }
 
     public StreetObjectDto save(StreetObjectDtoCreate dto, String imagePath) {
-        StreetObject streetObject = mappingHelper.mapObject(dto, StreetObject.class);
+        StreetObject streetObject = streetObjectMapper.toEntity(dto);
         streetObject.setImage(imagePath);
-        streetObjectRepository.save(streetObject);
-        return mappingHelper.mapObject(streetObject, StreetObjectDto.class);
+        return streetObjectMapper.toDto(streetObjectRepository.save(streetObject));
     }
 
     public void update(Long id, StreetObjectDtoUpdate dto) {
