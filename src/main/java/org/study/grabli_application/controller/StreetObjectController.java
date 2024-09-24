@@ -8,14 +8,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.study.grabli_application.dto.StreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDtoCreate;
-import org.study.grabli_application.dto.StreetObjectTypeDto;
 import org.study.grabli_application.dto.StreetObjectDtoUpdate;
-import org.study.grabli_application.service.ImageService;
+import org.study.grabli_application.dto.StreetObjectTypeDto;
 import org.study.grabli_application.service.StreetObjectService;
 import org.study.grabli_application.service.StreetObjectTypeService;
+import org.study.grabli_application.util.ImageContainer;
 
 import java.util.List;
 
@@ -26,40 +25,29 @@ import java.util.List;
 public class StreetObjectController {
     private final StreetObjectService streetObjectService;
     private final StreetObjectTypeService streetObjectTypeService;
-    private final ImageService imageService;
 
-    private String generateImageUrl(String filePathOrName) {
-        return ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/street-objects/images/")
-                .path(imageService.getFileName(filePathOrName))
-                .toUriString();
-    }
+    private static final String IMAGE_DOWNLOAD_URL = "/street-objects/images";
 
     @GetMapping
     public List<StreetObjectDto> getAllStreetObjects() {
         log.info("Получение всех объектов");
-        List<StreetObjectDto> dtoList = streetObjectService.getAll();
-        dtoList.forEach(dto -> dto.setImage(generateImageUrl(dto.getImage())));
-        return dtoList;
+        return streetObjectService.getAll(IMAGE_DOWNLOAD_URL);
     }
 
     @PostMapping
-    public StreetObjectDto saveStreetObject(@ModelAttribute StreetObjectDtoCreate requestDto) {
-        log.info("Сохранение объекта {}", requestDto);
-        String imagePath = imageService.save(requestDto.getImage());
-        StreetObjectDto responseDto = streetObjectService.save(requestDto, imagePath);
-        responseDto.setImage(generateImageUrl(imagePath));
-        return responseDto;
+    public StreetObjectDto saveStreetObject(@ModelAttribute StreetObjectDtoCreate dto) {
+        log.info("Сохранение объекта {}", dto);
+        return streetObjectService.save(dto, IMAGE_DOWNLOAD_URL);
     }
 
     @GetMapping("/images/{fileName}")
     public ResponseEntity<Resource> downloadImage(@PathVariable String fileName) {
         log.info("Получение изображения {}", fileName);
+        ImageContainer image = streetObjectService.loadImage(fileName);
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(imageService.getContentType(fileName)))
+                .contentType(MediaType.parseMediaType(image.getContentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
-                .body(imageService.load(fileName));
+                .body(image.getResource());
     }
 
     @PreAuthorize("isAuthenticated()")

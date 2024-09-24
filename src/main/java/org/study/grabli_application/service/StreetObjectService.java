@@ -10,6 +10,7 @@ import org.study.grabli_application.entity.StreetObject;
 import org.study.grabli_application.exceptions.EntityNotFoundException;
 import org.study.grabli_application.mapper.StreetObjectMapper;
 import org.study.grabli_application.repository.StreetObjectRepository;
+import org.study.grabli_application.util.ImageContainer;
 
 import java.util.List;
 
@@ -18,15 +19,28 @@ import java.util.List;
 public class StreetObjectService {
     private final StreetObjectRepository streetObjectRepository;
     private final StreetObjectMapper streetObjectMapper;
+    private final ImageService imageService;
 
-    public List<StreetObjectDto> getAll() {
-        return streetObjectMapper.toDtoList(streetObjectRepository.findAll());
+    public List<StreetObjectDto> getAll(String downloadUrl) {
+        List<StreetObjectDto> dtoList = streetObjectMapper.toDtoList(streetObjectRepository.findAll());
+        dtoList.forEach(dto -> dto.setImage(downloadUrl + imageService.getFileName(dto.getImage())));
+        return dtoList;
     }
 
-    public StreetObjectDto save(StreetObjectDtoCreate dto, String imagePath) {
-        StreetObject streetObject = streetObjectMapper.toEntity(dto);
+    public StreetObjectDto save(StreetObjectDtoCreate requestDto, String downloadUrl) {
+        String imagePath = imageService.save(requestDto.getImage());
+
+        StreetObject streetObject = streetObjectMapper.toEntity(requestDto);
         streetObject.setImage(imagePath);
-        return streetObjectMapper.toDto(streetObjectRepository.save(streetObject));
+
+        StreetObjectDto responseDto = streetObjectMapper.toDto(streetObjectRepository.save(streetObject));
+        responseDto.setImage(downloadUrl + imageService.getFileName(responseDto.getImage()));
+
+        return responseDto;
+    }
+
+    public ImageContainer loadImage(String fileName) {
+        return new ImageContainer(imageService.getContentType(fileName), imageService.load(fileName));
     }
 
     public void update(Long id, StreetObjectDtoUpdate dto) {
