@@ -6,7 +6,7 @@ import lombok.Data;
 public class StreetObjectDto {
     private Long id;
     private StreetObjectTypeDto type;
-    private Coordinates coordinates;
+    private double[] coordinates;
     private String title;
     private String description;
     private String image;

@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.study.grabli_application.dto.StreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDtoCreate;
 import org.study.grabli_application.dto.StreetObjectDtoUpdate;
@@ -26,18 +27,27 @@ public class StreetObjectController {
     private final StreetObjectService streetObjectService;
     private final StreetObjectTypeService streetObjectTypeService;
 
-    private static final String IMAGE_DOWNLOAD_URL = "/street-objects/images";
+    private void setImageUrl(StreetObjectDto dto) {
+        dto.setImage("/street-objects/images/" + dto.getImage());
+    }
 
     @GetMapping
     public List<StreetObjectDto> getAllStreetObjects() {
         log.info("Получение всех объектов");
-        return streetObjectService.getAll(IMAGE_DOWNLOAD_URL);
+        List<StreetObjectDto> dtoList = streetObjectService.getAll();
+        dtoList.forEach(this::setImageUrl);
+        return dtoList;
     }
 
     @PostMapping
-    public StreetObjectDto saveStreetObject(@ModelAttribute StreetObjectDtoCreate dto) {
-        log.info("Сохранение объекта {}", dto);
-        return streetObjectService.save(dto, IMAGE_DOWNLOAD_URL);
+    public StreetObjectDto saveStreetObject(
+            @RequestPart("info") StreetObjectDtoCreate requestDto,
+            @RequestPart("image") MultipartFile image
+    ) {
+        log.info("Сохранение объекта {}", requestDto);
+        StreetObjectDto responseDto = streetObjectService.save(requestDto, image);
+        setImageUrl(responseDto);
+        return responseDto;
     }
 
     @GetMapping("/images/{fileName}")
@@ -52,16 +62,19 @@ public class StreetObjectController {
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
-    public void updateStreetObject(@PathVariable Long id, @RequestBody StreetObjectDtoUpdate dto) {
+    public StreetObjectDto updateStreetObject(@PathVariable Long id, @RequestBody StreetObjectDtoUpdate requestDto) {
         log.info("Обновление объекта #{}", id);
-        streetObjectService.update(id, dto);
+        StreetObjectDto responseDto = streetObjectService.update(id, requestDto);
+        setImageUrl(responseDto);
+        return responseDto;
     }
 
-    @PreAuthorize("isAuthenticated()")
+    // @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    public void deleteStreetObject(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStreetObject(@PathVariable Long id) {
         log.info("Удаление объекта #{}", id);
         streetObjectService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/types")

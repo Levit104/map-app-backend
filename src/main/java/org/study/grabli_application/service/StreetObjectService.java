@@ -1,8 +1,8 @@
 package org.study.grabli_application.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.study.grabli_application.dto.StreetObjectDtoCreate;
 import org.study.grabli_application.dto.StreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDtoUpdate;
@@ -21,46 +21,30 @@ public class StreetObjectService {
     private final StreetObjectMapper streetObjectMapper;
     private final ImageService imageService;
 
-    public List<StreetObjectDto> getAll(String downloadUrl) {
-        List<StreetObjectDto> dtoList = streetObjectMapper.toDtoList(streetObjectRepository.findAll());
-        dtoList.forEach(dto -> dto.setImage(downloadUrl + imageService.getFileName(dto.getImage())));
-        return dtoList;
+    public List<StreetObjectDto> getAll() {
+        return streetObjectMapper.toDtoList(streetObjectRepository.findAll());
     }
 
-    public StreetObjectDto save(StreetObjectDtoCreate requestDto, String downloadUrl) {
-        String imagePath = imageService.save(requestDto.getImage());
-
-        StreetObject streetObject = streetObjectMapper.toEntity(requestDto);
-        streetObject.setImage(imagePath);
-
-        StreetObjectDto responseDto = streetObjectMapper.toDto(streetObjectRepository.save(streetObject));
-        responseDto.setImage(downloadUrl + imageService.getFileName(responseDto.getImage()));
-
-        return responseDto;
+    public StreetObjectDto save(StreetObjectDtoCreate dto, MultipartFile image) {
+        StreetObject streetObject = streetObjectMapper.toEntity(dto);
+        streetObject.setImage(imageService.save(image));
+        return streetObjectMapper.toDto(streetObjectRepository.save(streetObject));
     }
 
     public ImageContainer loadImage(String fileName) {
-        return new ImageContainer(imageService.getContentType(fileName), imageService.load(fileName));
+        return imageService.load(fileName);
     }
 
-    public void update(Long id, StreetObjectDtoUpdate dto) {
+    public StreetObjectDto update(Long id, StreetObjectDtoUpdate dto) {
         StreetObject streetObject = getById(id);
-        // TODO доработать фронт
-        streetObject.setTitle(dto.getTitle());
-        streetObject.setDescription("TODO");
-        streetObject.setImage("TODO");
-        streetObject.setCreatorName("TODO");
-        streetObject.setCreatorContact("TODO");
-        streetObjectRepository.save(streetObject);
+        streetObjectMapper.updateEntity(streetObject, dto);
+        return streetObjectMapper.toDto(streetObjectRepository.save(streetObject));
     }
 
     public void delete(Long id) {
-        // try catch нужен для Spring Boot 2, в Boot 3 исключение не бросается
-        try {
-            streetObjectRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException("Объект не найден");
-        }
+        StreetObject streetObject = getById(id);
+        imageService.delete(streetObject.getImage());
+        streetObjectRepository.delete(streetObject);
     }
 
     public void changeApproved(Long id, boolean approved) {
@@ -69,7 +53,7 @@ public class StreetObjectService {
         streetObjectRepository.save(streetObject);
     }
 
-    public StreetObject getById(Long id) {
+    private StreetObject getById(Long id) {
         return streetObjectRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Объект не найден")
         );
