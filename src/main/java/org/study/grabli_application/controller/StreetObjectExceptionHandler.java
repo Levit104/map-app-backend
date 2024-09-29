@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.unit.DataSize;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.study.grabli_application.dto.ErrorResponse;
@@ -14,12 +16,25 @@ import org.study.grabli_application.exceptions.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
 public class StreetObjectExceptionHandler {
     @Value("${spring.servlet.multipart.max-file-size}")
     private DataSize maxFileSize;
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) {
+        Map<String, String> errors = e.getBindingResult()
+                .getFieldErrors().stream()
+                .collect(Collectors.toMap(FieldError::getField, fieldError ->
+                        Optional.ofNullable(fieldError.getDefaultMessage()).orElse("Некорректное значение")));
+
+        return ResponseEntity.badRequest().body(errors);
+    }
 
     @ExceptionHandler(SizeException.class)
     public ResponseEntity<ErrorResponse> handleException(SizeException e, HttpServletRequest request) {

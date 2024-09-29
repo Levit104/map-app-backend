@@ -17,6 +17,7 @@ import org.study.grabli_application.service.StreetObjectService;
 import org.study.grabli_application.service.StreetObjectTypeService;
 import org.study.grabli_application.util.ImageContainer;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -41,7 +42,7 @@ public class StreetObjectController {
 
     @PostMapping
     public StreetObjectDto saveStreetObject(
-            @RequestPart("info") StreetObjectDtoCreate requestDto,
+            @Valid @RequestPart("info") StreetObjectDtoCreate requestDto,
             @RequestPart("image") MultipartFile image
     ) {
         log.info("Сохранение объекта {}", requestDto);
@@ -62,7 +63,10 @@ public class StreetObjectController {
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
-    public StreetObjectDto updateStreetObject(@PathVariable Long id, @RequestBody StreetObjectDtoUpdate requestDto) {
+    public StreetObjectDto updateStreetObject(
+            @PathVariable Long id,
+            @Valid @RequestBody StreetObjectDtoUpdate requestDto
+    ) {
         log.info("Обновление объекта #{}", id);
         StreetObjectDto responseDto = streetObjectService.update(id, requestDto);
         setImageUrl(responseDto);

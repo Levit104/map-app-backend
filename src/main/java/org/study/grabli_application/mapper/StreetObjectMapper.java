@@ -6,7 +6,7 @@ import org.study.grabli_application.dto.StreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDtoCreate;
 import org.study.grabli_application.dto.StreetObjectDtoUpdate;
 import org.study.grabli_application.entity.StreetObject;
-import org.study.grabli_application.util.GeometryUtil;
+import org.study.grabli_application.util.GeometryUtils;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public interface StreetObjectMapper {
 
     default Point toPoint(StreetObjectDtoCreate dto) {
         double[] coordinates = dto.getCoordinates();
-        return GeometryUtil.createPoint(coordinates[0], coordinates[1]);
+        return GeometryUtils.createPoint(coordinates[0], coordinates[1]);
     }
 
     default double[] toCoordinates(StreetObject streetObject) {
