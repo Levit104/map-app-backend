@@ -69,7 +69,7 @@ public class StreetObjectController {
         return responseDto;
     }
 
-    // @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStreetObject(@PathVariable Long id) {
         log.info("Удаление объекта #{}", id);
