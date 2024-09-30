@@ -83,7 +83,12 @@ public class StreetObjectExceptionHandler {
     private ResponseEntity<ErrorResponse> newResponse(
             Exception e, HttpServletRequest request, HttpStatus status, String message
     ) {
-        log.error(message, e);
+        if (status == HttpStatus.INTERNAL_SERVER_ERROR) {
+            log.error(message, e);
+        } else {
+            log.info(message);
+        }
+
         return ResponseEntity
                 .status(status)
                 .body(new ErrorResponse(LocalDateTime.now(), requestString(request), statusString(status), message));
