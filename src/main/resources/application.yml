@@ -2,6 +2,9 @@ server:
     port: 8899
     servlet:
         context-path: /api
+        session:
+            cookie:
+                same-site: lax
 spring:
     application:
         name: grabli_application
