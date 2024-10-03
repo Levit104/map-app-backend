@@ -13,7 +13,6 @@ import org.study.grabli_application.service.ImageService;
 import org.study.grabli_application.util.ImageContainer;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -25,50 +24,31 @@ public class ImageServiceImpl implements ImageService {
     public ImageServiceImpl(@Value("${application.image-upload-path}") String imageUploadPath) throws IOException {
         uploadPath = Path.of(imageUploadPath);
         // org.springframework.util.FileSystemUtils.deleteRecursively(uploadPath);
-        Files.createDirectories(uploadPath);
+        createUploadDirectory();
     }
 
     @Override
     public String save(MultipartFile file) {
-        try {
-            validate(file);
-            String newFileName = generateUniqueName(file);
-            Path newFilePath = uploadPath.resolve(newFileName);
-            Files.write(newFilePath, file.getBytes());
-            return newFileName;
-        } catch (IOException e) {
-            throw new ImageStorageException("Ошибка при сохранении файла");
-        }
+        validate(file);
+        String fileName = generateUniqueName(file);
+        Path path = getFilePath(fileName);
+        writeToFileSystem(path, file);
+        return fileName;
     }
 
     @Override
     public ImageContainer load(String fileName) {
-        try {
-            Path path = uploadPath.resolve(fileName);
-
-            if (Files.notExists(path)) {
-                throw new ImageNotFoundException("Файл " + fileName + " не найден");
-            }
-
-            Resource resource = new PathResource(path);
-            String contentType = Files.probeContentType(path);
-
-            return new ImageContainer(contentType, resource);
-        } catch (MalformedURLException e) {
-            throw new ImageStorageException("Ошибка при загрузке файла " + fileName);
-        } catch (IOException e) {
-            throw new ImageStorageException("Ошибка при загрузке типа файла " + fileName);
-        }
+        Path path = getFilePath(fileName);
+        checkExistence(path);
+        Resource resource = createResource(path);
+        String contentType = getContentType(path);
+        return new ImageContainer(contentType, resource);
     }
 
     @Override
     public void delete(String fileName) {
-        try {
-            Path path = uploadPath.resolve(fileName);
-            Files.deleteIfExists(path);
-        } catch (IOException e) {
-            throw new ImageStorageException("Ошибка при удалении файла " + fileName);
-        }
+        Path path = getFilePath(fileName);
+        deleteFromFileSystem(path);
     }
 
     private void validate(MultipartFile file) {
@@ -83,5 +63,47 @@ public class ImageServiceImpl implements ImageService {
 
     private String generateUniqueName(MultipartFile file) {
         return UUID.randomUUID() + "." + StringUtils.getFilenameExtension(file.getOriginalFilename());
+    }
+
+    private Path getFilePath(String fileName) {
+        return uploadPath.resolve(fileName);
+    }
+
+    private void createUploadDirectory() throws IOException {
+        Files.createDirectories(uploadPath);
+    }
+
+    private void writeToFileSystem(Path path, MultipartFile file) {
+        try {
+            Files.write(path, file.getBytes());
+        } catch (IOException e) {
+            throw new ImageStorageException("Ошибка при сохранении файла " + path.getFileName());
+        }
+    }
+
+    private void deleteFromFileSystem(Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            throw new ImageStorageException("Ошибка при удалении файла " + path.getFileName());
+        }
+    }
+
+    private void checkExistence(Path path) {
+        if (Files.notExists(path)) {
+            throw new ImageNotFoundException("Файл " + path.getFileName() + " не найден");
+        }
+    }
+
+    private String getContentType(Path path) {
+        try {
+            return Files.probeContentType(path);
+        } catch (IOException e) {
+            throw new ImageStorageException("Ошибка при загрузке типа файла " + path.getFileName());
+        }
+    }
+
+    private Resource createResource(Path path) {
+        return new PathResource(path);
     }
 }
