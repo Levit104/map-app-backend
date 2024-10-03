@@ -29,6 +29,11 @@ public class StreetObjectServiceImpl implements StreetObjectService {
     }
 
     @Override
+    public StreetObjectDto get(Long id) {
+        return streetObjectMapper.toDto(findById(id));
+    }
+
+    @Override
     public StreetObjectDto save(StreetObjectDtoCreate dto, MultipartFile image) {
         StreetObject streetObject = streetObjectMapper.toEntity(dto);
         streetObject.setImage(imageService.save(image));

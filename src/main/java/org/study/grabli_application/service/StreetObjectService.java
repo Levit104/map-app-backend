@@ -11,6 +11,8 @@ import java.util.List;
 public interface StreetObjectService {
     List<StreetObjectDto> getAll();
 
+    StreetObjectDto get(Long id);
+
     StreetObjectDto save(StreetObjectDtoCreate dto, MultipartFile image);
 
     StreetObjectDto update(Long id, StreetObjectDtoUpdate dto);
@@ -20,5 +22,4 @@ public interface StreetObjectService {
     void changeApproved(Long id, boolean approved);
 
     ImageContainer loadImage(String fileName);
-
 }

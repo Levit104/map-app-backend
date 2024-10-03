@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.study.grabli_application.dto.StreetObjectDto;
 import org.study.grabli_application.dto.StreetObjectDtoCreate;
 import org.study.grabli_application.dto.StreetObjectDtoUpdate;
@@ -18,6 +19,7 @@ import org.study.grabli_application.service.StreetObjectService;
 import org.study.grabli_application.service.StreetObjectTypeService;
 import org.study.grabli_application.util.ImageContainer;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -34,6 +36,13 @@ public class StreetObjectController {
         dto.setImage(servletContextPath + "/street-objects/images/" + dto.getImage());
     }
 
+    private URI getObjectUri(StreetObjectDto dto) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .build(dto.getId());
+    }
+
     @GetMapping
     public List<StreetObjectDto> getAllStreetObjects() {
         List<StreetObjectDto> dtoList = streetObjectService.getAll();
@@ -41,14 +50,21 @@ public class StreetObjectController {
         return dtoList;
     }
 
+    @GetMapping("/{id}")
+    public StreetObjectDto getStreetObject(@PathVariable Long id) {
+        StreetObjectDto dto = streetObjectService.get(id);
+        setImageUrl(dto);
+        return dto;
+    }
+
     @PostMapping
-    public StreetObjectDto saveStreetObject(
+    public ResponseEntity<StreetObjectDto> saveStreetObject(
             @Valid @RequestPart("info") StreetObjectDtoCreate requestDto,
             @RequestPart("image") MultipartFile image
     ) {
         StreetObjectDto responseDto = streetObjectService.save(requestDto, image);
         setImageUrl(responseDto);
-        return responseDto;
+        return ResponseEntity.created(getObjectUri(responseDto)).body(responseDto);
     }
 
     @GetMapping("/images/{fileName}")
