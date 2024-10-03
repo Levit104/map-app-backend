@@ -2,7 +2,6 @@ package org.study.grabli_application.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -29,11 +28,13 @@ public class StreetObjectController {
     private final StreetObjectService streetObjectService;
     private final StreetObjectTypeService streetObjectTypeService;
 
-    @Value("${server.servlet.context-path}")
-    private String servletContextPath;
-
     private void setImageUrl(StreetObjectDto dto) {
-        dto.setImage(servletContextPath + "/street-objects/images/" + dto.getImage());
+        String link = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/street-objects/images/")
+                .path(dto.getImage())
+                .toUriString();
+        dto.setImage(link);
     }
 
     private URI getObjectUri(StreetObjectDto dto) {
