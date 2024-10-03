@@ -1,11 +1,11 @@
 package org.study.grabli_application.entity;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
-import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 

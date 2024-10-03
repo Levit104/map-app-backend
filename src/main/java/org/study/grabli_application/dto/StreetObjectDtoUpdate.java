@@ -1,9 +1,8 @@
 package org.study.grabli_application.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.study.grabli_application.util.ValidationUtils;
-
-import javax.validation.constraints.NotBlank;
 
 @Data
 public class StreetObjectDtoUpdate {

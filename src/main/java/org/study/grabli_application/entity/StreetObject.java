@@ -1,12 +1,12 @@
 package org.study.grabli_application.entity;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 import org.locationtech.jts.geom.Point;
 
-import javax.persistence.*;
 import java.util.Objects;
 
 @Entity

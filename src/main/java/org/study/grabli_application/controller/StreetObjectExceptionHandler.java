@@ -1,5 +1,6 @@
 package org.study.grabli_application.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.SizeException;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.study.grabli_application.dto.ErrorResponse;
 import org.study.grabli_application.exceptions.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;

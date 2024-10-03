@@ -1,5 +1,6 @@
 package org.study.grabli_application.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -17,7 +18,6 @@ import org.study.grabli_application.service.StreetObjectService;
 import org.study.grabli_application.service.StreetObjectTypeService;
 import org.study.grabli_application.util.ImageContainer;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -55,9 +55,9 @@ public class StreetObjectController {
     public ResponseEntity<Resource> downloadImage(@PathVariable String fileName) {
         ImageContainer image = streetObjectService.loadImage(fileName);
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(image.getContentType()))
+                .contentType(MediaType.parseMediaType(image.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
-                .body(image.getResource());
+                .body(image.resource());
     }
 
     @PreAuthorize("isAuthenticated()")

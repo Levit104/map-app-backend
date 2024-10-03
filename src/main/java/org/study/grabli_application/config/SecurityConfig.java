@@ -2,9 +2,8 @@ package org.study.grabli_application.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,17 +14,16 @@ import org.study.grabli_application.security.AuthenticationSuccessHandlerImpl;
 import org.study.grabli_application.security.LogoutSuccessHandlerImpl;
 
 @Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                // .csrf(customizer -> customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
-                .authorizeRequests(customizer -> customizer
-                        // .antMatchers("/street-objects").authenticated()
-                        .antMatchers("/**").permitAll()
+                // .csrf(customizer -> customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .authorizeHttpRequests(customizer -> customizer
+                        // .requestMatchers("/street-objects").authenticated()
+                        .requestMatchers("/**").permitAll()
                 )
                 .formLogin(customizer -> customizer
                         .loginPage("/login")
