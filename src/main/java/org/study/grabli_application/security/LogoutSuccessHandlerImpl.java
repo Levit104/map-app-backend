@@ -16,4 +16,3 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }
-

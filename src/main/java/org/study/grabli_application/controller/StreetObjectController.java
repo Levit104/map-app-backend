@@ -28,22 +28,6 @@ public class StreetObjectController {
     private final StreetObjectService streetObjectService;
     private final StreetObjectTypeService streetObjectTypeService;
 
-    private void setImageUrl(StreetObjectDto dto) {
-        String link = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/street-objects/images/")
-                .path(dto.getImage())
-                .toUriString();
-        dto.setImage(link);
-    }
-
-    private URI getObjectUri(StreetObjectDto dto) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .build(dto.getId());
-    }
-
     @GetMapping
     public List<StreetObjectDto> getAllStreetObjects() {
         List<StreetObjectDto> dtoList = streetObjectService.getAll();
@@ -104,5 +88,21 @@ public class StreetObjectController {
     @PatchMapping("/{id}")
     public void approveStreetObject(@PathVariable Long id, @RequestParam boolean approved) {
         streetObjectService.changeApproved(id, approved);
+    }
+
+    private void setImageUrl(StreetObjectDto dto) {
+        String link = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/street-objects/images/")
+                .path(dto.getImage())
+                .toUriString();
+        dto.setImage(link);
+    }
+
+    private URI getObjectUri(StreetObjectDto dto) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .build(dto.getId());
     }
 }
